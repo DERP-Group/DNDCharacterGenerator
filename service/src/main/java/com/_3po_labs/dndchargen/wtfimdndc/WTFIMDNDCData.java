@@ -1,6 +1,6 @@
 package com._3po_labs.dndchargen.wtfimdndc;
 
-import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomUtils;
 
 public class WTFIMDNDCData {
 
@@ -723,8 +723,7 @@ public class WTFIMDNDCData {
   }
   
   public String getRandomHeading(){
-    int i = RandomUtils.nextInt(headings.length);
-    return headings[i];
+    return headings[RandomUtils.nextInt(0, headings.length)];
   }
 
   public void setHeadings(String[] headings) {
@@ -733,6 +732,10 @@ public class WTFIMDNDCData {
 
   public String[] getResponses() {
     return responses;
+  }
+  
+  public String getRandomResponse(){
+    return responses[RandomUtils.nextInt(0, responses.length)];
   }
 
   public void setResponses(String[] responses) {
@@ -743,12 +746,20 @@ public class WTFIMDNDCData {
     return adjectives;
   }
   
+  public String getRandomAdjective(){
+    return adjectives[RandomUtils.nextInt(0, adjectives.length)];
+  }
+  
   public void setAdjectives(String[] adjectives) {
     this.adjectives = adjectives;
   }
 
   public String[] getRaces() {
     return races;
+  }
+  
+  public String getRandomRace(){
+    return races[RandomUtils.nextInt(0, races.length)];
   }
 
   public void setRaces(String[] races) {
@@ -758,6 +769,10 @@ public class WTFIMDNDCData {
   public String[] getdClasses() {
     return dClasses;
   }
+  
+  public String getRandomDClass(){
+    return dClasses[RandomUtils.nextInt(0, dClasses.length)];
+  }
 
   public void setdClasses(String[] dClasses) {
     this.dClasses = dClasses;
@@ -766,6 +781,10 @@ public class WTFIMDNDCData {
   public String[] getLocations() {
     return locations;
   }
+  
+  public String getRandomLocation(){
+    return locations[RandomUtils.nextInt(0, locations.length)];
+  }
 
   public void setLocations(String[] locations) {
     this.locations = locations;
@@ -773,6 +792,10 @@ public class WTFIMDNDCData {
 
   public String[] getBackstories() {
     return backstories;
+  }
+  
+  public String getRandomBackstory(){
+    return backstories[RandomUtils.nextInt(0, backstories.length)];
   }
 
   public void setBackstories(String[] backstories) {

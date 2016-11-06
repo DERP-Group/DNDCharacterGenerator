@@ -34,94 +34,102 @@ import com.derpgroup.derpwizard.voice.model.ServiceOutput;
  * @since 0.0.1
  */
 public class CharGenManager {
-  
-  private static WTFIMDNDCUtility charGenUtility = WTFIMDNDCUtility.getInstance();
 
-  protected void doHelpRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    serviceOutput.getVoiceOutput().setSsmltext("I'd love to help, but I don't have any help topics programmed yet.");
-    serviceOutput.getVoiceOutput().setPlaintext("I'd love to help, but I don't have any help topics programmed yet.");
-    serviceOutput.setConversationEnded(true);
-  }
+    private static WTFIMDNDCUtility charGenUtility = WTFIMDNDCUtility.getInstance();
 
-  protected void doHelloRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    String output = charGenUtility.generateHeading();
-    serviceOutput.getVoiceOutput().setSsmltext(output);
-    serviceOutput.getVoiceOutput().setPlaintext(output);
-    serviceOutput.setConversationEnded(true);
-  }
-
-  protected void doGoodbyeRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    serviceOutput.getVoiceOutput().setSsmltext("Goodbye!");
-    serviceOutput.getVoiceOutput().setPlaintext("Goodbye!");
-    serviceOutput.setConversationEnded(true);
-  }
-
-  protected void doCancelRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    serviceOutput.getVoiceOutput().setSsmltext("Cancelling");
-    serviceOutput.getVoiceOutput().setPlaintext("Cancelling");
-    serviceOutput.setConversationEnded(true);
-  }
-
-  protected void doStopRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    serviceOutput.getVoiceOutput().setSsmltext("Stopping");
-    serviceOutput.getVoiceOutput().setPlaintext("Stopping");
-    serviceOutput.setConversationEnded(true);
-  }
-
-  protected void doRepeatRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    serviceOutput.getVoiceOutput().setSsmltext("Repeating");
-    serviceOutput.getVoiceOutput().setPlaintext("Repeating");
-    serviceOutput.setConversationEnded(true);
-  }
-
-  protected void doYesRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    serviceOutput.getVoiceOutput().setSsmltext("Yes");
-    serviceOutput.getVoiceOutput().setPlaintext("Yes");
-    serviceOutput.setConversationEnded(true);
-  }
-
-  protected void doNoRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-    serviceOutput.getVoiceOutput().setSsmltext("No");
-    serviceOutput.getVoiceOutput().setPlaintext("No");
-    serviceOutput.setConversationEnded(true);
-  }
-
-  /**
-   * An example primary entry point into the service.
-   * At this point the Resource classes should have mapped any device-specific requests
-   * into standard ServiceInput/ServiceOutput POJOs. As well as mapped any device-specific
-   * requests into service understandable subjects.
-   * @param serviceInput
-   * @param serviceOutput
-   */
-  public void handleRequest(ServiceInput serviceInput, ServiceOutput serviceOutput){
-    switch(serviceInput.getSubject()){
-    case "HELP":
-      doHelpRequest(serviceInput, serviceOutput);
-      break;
-    case "START_OF_CONVERSATION":
-      doHelloRequest(serviceInput, serviceOutput);
-      break;
-    case "END_OF_CONVERSATION":
-      doGoodbyeRequest(serviceInput, serviceOutput);
-      break;
-    case "CANCEL":
-      doCancelRequest(serviceInput, serviceOutput);
-      break;
-    case "STOP":
-      doStopRequest(serviceInput, serviceOutput);
-      break;
-    case "REPEAT":
-      doRepeatRequest(serviceInput, serviceOutput);
-      break;
-    case "YES":
-      doYesRequest(serviceInput, serviceOutput);
-      break;
-    case "NO":
-      doNoRequest(serviceInput, serviceOutput);
-      break;
-    default:
-      break;
+    protected void doHelpRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	serviceOutput.getVoiceOutput()
+		.setSsmltext("I'd love to help, but I don't have any help topics programmed yet.");
+	serviceOutput.getVoiceOutput()
+		.setPlaintext("I'd love to help, but I don't have any help topics programmed yet.");
+	serviceOutput.setConversationEnded(true);
     }
-  }
+
+    protected void doHelloRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	String heading = charGenUtility.generateHeading();
+	String character = charGenUtility.generateCharacter();
+	serviceOutput.getVoiceOutput().setSsmltext(heading + ". " + character);
+	serviceOutput.getVisualOutput().setTitle(heading);
+	serviceOutput.getVisualOutput().setText(character);
+	serviceOutput.setConversationEnded(true);
+    }
+
+    protected void doGoodbyeRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	serviceOutput.getVoiceOutput().setSsmltext("Goodbye!");
+	serviceOutput.getVoiceOutput().setPlaintext("Goodbye!");
+	serviceOutput.setConversationEnded(true);
+    }
+
+    protected void doCancelRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	serviceOutput.getVoiceOutput().setSsmltext("Cancelling");
+	serviceOutput.getVoiceOutput().setPlaintext("Cancelling");
+	serviceOutput.setConversationEnded(true);
+    }
+
+    protected void doStopRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	serviceOutput.getVoiceOutput().setSsmltext("Stopping");
+	serviceOutput.getVoiceOutput().setPlaintext("Stopping");
+	serviceOutput.setConversationEnded(true);
+    }
+
+    protected void doRepeatRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	serviceOutput.getVoiceOutput().setSsmltext("Repeating");
+	serviceOutput.getVoiceOutput().setPlaintext("Repeating");
+	serviceOutput.setConversationEnded(true);
+    }
+
+    protected void doYesRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	serviceOutput.getVoiceOutput().setSsmltext("Yes");
+	serviceOutput.getVoiceOutput().setPlaintext("Yes");
+	serviceOutput.setConversationEnded(true);
+    }
+
+    protected void doNoRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+	serviceOutput.getVoiceOutput().setSsmltext("No");
+	serviceOutput.getVoiceOutput().setPlaintext("No");
+	serviceOutput.setConversationEnded(true);
+    }
+
+    /**
+     * An example primary entry point into the service. At this point the
+     * Resource classes should have mapped any device-specific requests into
+     * standard ServiceInput/ServiceOutput POJOs. As well as mapped any
+     * device-specific requests into service understandable subjects.
+     * 
+     * @param serviceInput
+     * @param serviceOutput
+     */
+    public void handleRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
+	switch (serviceInput.getSubject()) {
+	case "GENERATE_CHARACTER":
+	    doHelloRequest(serviceInput, serviceOutput);
+	    break;
+	case "HELP":
+	    doHelpRequest(serviceInput, serviceOutput);
+	    break;
+	case "START_OF_CONVERSATION":
+	    doHelloRequest(serviceInput, serviceOutput);
+	    break;
+	case "END_OF_CONVERSATION":
+	    doGoodbyeRequest(serviceInput, serviceOutput);
+	    break;
+	case "CANCEL":
+	    doCancelRequest(serviceInput, serviceOutput);
+	    break;
+	case "STOP":
+	    doStopRequest(serviceInput, serviceOutput);
+	    break;
+	case "REPEAT":
+	    doRepeatRequest(serviceInput, serviceOutput);
+	    break;
+	case "YES":
+	    doYesRequest(serviceInput, serviceOutput);
+	    break;
+	case "NO":
+	    doNoRequest(serviceInput, serviceOutput);
+	    break;
+	default:
+	    break;
+	}
+    }
 }

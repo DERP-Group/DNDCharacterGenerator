@@ -38,17 +38,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com._3po_labs.dndchargen.configuration.MainConfig;
 import com._3po_labs.dndchargen.manager.CharGenManager;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.json.SpeechletResponseEnvelope;
-import com.amazon.speech.speechlet.IntentRequest;
-import com.amazon.speech.speechlet.LaunchRequest;
-import com.amazon.speech.speechlet.SessionEndedRequest;
 import com.amazon.speech.speechlet.SpeechletRequest;
-import com.amazon.speech.speechlet.SpeechletResponse;
+import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
 import com.amazon.speech.ui.SsmlOutputSpeech;
+import com.derpgroup.derpwizard.configuration.MainConfig;
 import com.derpgroup.derpwizard.voice.alexa.AlexaUtils;
 import com.derpgroup.derpwizard.voice.exception.DerpwizardException;
 import com.derpgroup.derpwizard.voice.exception.DerpwizardException.DerpwizardExceptionReasons;
@@ -115,7 +112,7 @@ public class CharGenAlexaResource {
       serviceInput.setMessageAsMap(messageAsMap);
       
       SpeechletRequest speechletRequest = (SpeechletRequest)request.getRequest();
-      String subject = getMessageSubject(speechletRequest);
+      String subject = AlexaUtils.getMessageSubject(speechletRequest);
       serviceInput.setSubject(subject);
       
       ////////////////////////////////////
@@ -134,19 +131,24 @@ public class CharGenAlexaResource {
       Map<String,Object> sessionAttributesOutput = mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){});
       responseEnvelope.setSessionAttributes(sessionAttributesOutput);
 
-      SpeechletResponse speechletResponse = new SpeechletResponse();
       SimpleCard card;
       SsmlOutputSpeech outputSpeech;
-
-      // If this is the end of the conversation then
+      Reprompt reprompt = null;
+      boolean shouldEndSession = false;
+      
       switch(serviceInput.getSubject()){
       case "END_OF_CONVERSATION":
       case "STOP":
       case "CANCEL":
-        outputSpeech = null;
-        card = null;
-        speechletResponse.setShouldEndSession(true);
-        break;
+        if(serviceOutput.getVoiceOutput() == null || serviceOutput.getVoiceOutput().getSsmltext() == null){
+            outputSpeech = null;
+          }else{
+            outputSpeech = new SsmlOutputSpeech();
+            outputSpeech.setSsml("<speak>"+serviceOutput.getVoiceOutput().getSsmltext()+"</speak>");
+          }
+          card = null;
+          shouldEndSession = true;
+          break;
       default:
         if(StringUtils.isNotEmpty(serviceOutput.getVisualOutput().getTitle()) &&
             StringUtils.isNotEmpty(serviceOutput.getVisualOutput().getText()) ){
@@ -157,62 +159,28 @@ public class CharGenAlexaResource {
         else{
           card = null;
         }
-        
-        outputSpeech = new SsmlOutputSpeech();
-        outputSpeech.setSsml(serviceOutput.getVoiceOutput().getSsmltext());
-        speechletResponse.setShouldEndSession(serviceOutput.isConversationEnded());
-        break;
+        if(serviceOutput.getDelayedVoiceOutput() !=null && StringUtils.isNotEmpty(serviceOutput.getDelayedVoiceOutput().getSsmltext())){
+            reprompt = new Reprompt();
+            SsmlOutputSpeech repromptSpeech = new SsmlOutputSpeech();
+            repromptSpeech.setSsml("<speak>"+serviceOutput.getDelayedVoiceOutput().getSsmltext()+"</speak>");
+            reprompt.setOutputSpeech(repromptSpeech);
+          }
+
+          outputSpeech = new SsmlOutputSpeech();
+          outputSpeech.setSsml("<speak>"+serviceOutput.getVoiceOutput().getSsmltext()+"</speak>");
+          shouldEndSession = serviceOutput.isConversationEnded();
+          break;
       }
+
+      Map<String,Object> sessionAttributes = mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){});
       
-      speechletResponse.setOutputSpeech(outputSpeech);
-      speechletResponse.setCard(card);
-      responseEnvelope.setResponse(speechletResponse);
-      responseEnvelope.setVersion(ALEXA_VERSION);
-  
-      return responseEnvelope;
+      return AlexaUtils.buildOutput(outputSpeech, card, reprompt, shouldEndSession, sessionAttributes);
     }catch(DerpwizardException e){
       LOG.debug(e.getMessage());
-      return new DerpwizardExceptionAlexaWrapper(e, "1.0",mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
+      return new DerpwizardExceptionAlexaWrapper(e, ALEXA_VERSION,mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
     }catch(Throwable t){
       LOG.debug(t.getMessage());
-      return new DerpwizardExceptionAlexaWrapper(new DerpwizardException(t.getMessage()),"1.0", mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
+      return new DerpwizardExceptionAlexaWrapper(new DerpwizardException(t.getMessage()),ALEXA_VERSION, mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
     }
-  }
-  
-  /**
-   * An example helper function to map Alexa specific "intents" into program specific subjects.
-   * @param request
-   * @return
-   */
-  public static String getMessageSubject(SpeechletRequest request) {
-    if(request instanceof LaunchRequest){
-      return "START_OF_CONVERSATION";
-    }else if(request instanceof SessionEndedRequest){
-      return "END_OF_CONVERSATION";
-    }else if (!(request instanceof IntentRequest)) {
-      return "";
-    }
-    
-    IntentRequest intentRequest = (IntentRequest) request;
-    String intentRequestName = intentRequest.getIntent().getName();
-    if(intentRequestName.equalsIgnoreCase("AMAZON.HelpIntent")){
-      return "HELP";
-    }
-    if(intentRequestName.equalsIgnoreCase("AMAZON.CancelIntent")){
-      return "CANCEL";
-    }
-    if(intentRequestName.equalsIgnoreCase("AMAZON.StopIntent")){
-      return "STOP";
-    }
-    if(intentRequestName.equalsIgnoreCase("AMAZON.YesIntent")){
-      return "YES";
-    }
-    if(intentRequestName.equalsIgnoreCase("AMAZON.NoIntent")){
-      return "NO";
-    }
-    if(intentRequestName.equalsIgnoreCase("AMAZON.RepeatIntent")){
-      return "REPEAT";
-    }
-    return intentRequestName;
   }
 }

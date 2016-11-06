@@ -26,10 +26,11 @@ import io.dropwizard.setup.Environment;
 
 import java.io.IOException;
 
-import com._3po_labs.dndchargen.configuration.MainConfig;
 import com._3po_labs.dndchargen.resource.CharGenAlexaResource;
 import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCData;
 import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCUtility;
+import com.derpgroup.derpwizard.configuration.MainConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -50,10 +51,13 @@ public class App extends Application<MainConfig> {
 
   @Override
   public void run(MainConfig config, Environment environment) throws IOException {
-    if (config.isPrettyPrint()) {
       ObjectMapper mapper = environment.getObjectMapper();
-      mapper.enable(SerializationFeature.INDENT_OUTPUT);
-    }
+      if (config.isPrettyPrint()) {
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+      }
+      if (config.isIgnoreUnknownJsonProperties()) {
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+      }
 
     // Resources
     environment.jersey().register(new CharGenAlexaResource(config, environment));
