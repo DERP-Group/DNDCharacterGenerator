@@ -1,0 +1,29 @@
+{
+  "server": {
+    "applicationConnectors": [
+      {
+        "type": "http",
+        "port" : 13080
+      }
+    ],
+    "adminConnectors": [
+      {
+        "type": "http",
+        "port": 13081
+      }
+    ]
+  },
+  "logging": {
+    "level": "INFO",
+    "loggers": {
+      "com.derpgroup": {
+        "level": "DEBUG",
+        "appenders": [
+          {
+            "type": "console"
+          }
+        ]
+      }
+    }
+  }
+}
