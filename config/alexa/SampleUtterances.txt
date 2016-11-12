@@ -1,0 +1,24 @@
+GENERATE_CHARACTER who is my character
+GENERATE_CHARACTER who is my d.n.d. character
+GENERATE_CHARACTER who is my d. and d. character
+GENERATE_CHARACTER who the fuck is my character
+GENERATE_CHARACTER who the fuck is my d.n.d. character
+GENERATE_CHARACTER who the fuck is my d. and d. character
+GENERATE_CHARACTER who is my fucking character
+GENERATE_CHARACTER who is my fucking d.n.d. character
+GENERATE_CHARACTER who is my fucking d. and d. character
+GENERATE_CHARACTER what is my character
+GENERATE_CHARACTER what is my d.n.d. character
+GENERATE_CHARACTER what is my d. and d. character
+GENERATE_CHARACTER what the fuck is my character
+GENERATE_CHARACTER what the fuck is my d.n.d. character
+GENERATE_CHARACTER what the fuck is my d. and d. character
+GENERATE_CHARACTER what is my fucking character
+GENERATE_CHARACTER what is my fucking d.n.d. character
+GENERATE_CHARACTER what is my fucking d. and d. character
+GENERATE_CHARACTER another
+GENERATE_CHARACTER roll me another
+GENERATE_CHARACTER generate me another
+GENERATE_CHARACTER again
+GENERATE_CHARACTER do it again
+WHATISMYID what is my id

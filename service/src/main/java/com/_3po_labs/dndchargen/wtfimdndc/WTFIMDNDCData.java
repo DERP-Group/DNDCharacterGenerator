@@ -7,14 +7,19 @@ public class WTFIMDNDCData {
   private String[] headings = {
       "I'm going to roll the stats for a fucking",
       "Check this shit out, I'm going to be a fucking",
-      "You think your character is cool? My character is a fucking"};
+      "You think your character is cool? My character is a fucking", //Everything after this is not part of the origi
+      "I'm about to put together a gotdamn",
+      "Check out how I roleplay the shit out of a",
+      "Feast your eyes on my gotdamn"
+      };
   
   private String[] responses = {
       "That sounds fucking terrible",
       "Give me a-fucking-nother one",
       "I don't really give a fuck about that guy",
       "I've already fucking roleplayed that one",
-      "That doesn't make any fucking sense"};
+      "That doesn't make any fucking sense"
+      };
   
   private String[] adjectives = {
       "bigoted",

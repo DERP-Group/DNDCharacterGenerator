@@ -60,7 +60,7 @@ public class CharGenManager {
 	serviceOutput.setConversationEnded(true);
     }
 
-    protected void doHelloRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
+    protected void doGenerateCharacterRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	String heading = charGenUtility.generateHeading();
 	String character = charGenUtility.generateCharacter();
 	serviceOutput.getVoiceOutput().setSsmltext(heading + " " + character);
@@ -85,15 +85,9 @@ public class CharGenManager {
 	serviceOutput.setConversationEnded(true);
     }
 
-    protected void doCancelRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput().setSsmltext("Cancelling");
-	serviceOutput.getVoiceOutput().setPlaintext("Cancelling");
-	serviceOutput.setConversationEnded(true);
-    }
-
     protected void doStopRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput().setSsmltext("Stopping");
-	serviceOutput.getVoiceOutput().setPlaintext("Stopping");
+	serviceOutput.getVoiceOutput().setSsmltext("You bet your ass.");
+	serviceOutput.getVoiceOutput().setPlaintext("You bet your ass.");
 	serviceOutput.setConversationEnded(true);
     }
 
@@ -111,18 +105,6 @@ public class CharGenManager {
 	serviceOutput.setConversationEnded(false);
     }
 
-    protected void doYesRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput().setSsmltext("Yes");
-	serviceOutput.getVoiceOutput().setPlaintext("Yes");
-	serviceOutput.setConversationEnded(true);
-    }
-
-    protected void doNoRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput().setSsmltext("No");
-	serviceOutput.getVoiceOutput().setPlaintext("No");
-	serviceOutput.setConversationEnded(true);
-    }
-
     /**
      * An example primary entry point into the service. At this point the
      * Resource classes should have mapped any device-specific requests into
@@ -137,31 +119,25 @@ public class CharGenManager {
 	LOG.info("Request subject: " + subject);
 	switch (serviceInput.getSubject()) {
 	case "GENERATE_CHARACTER":
-	    doHelloRequest(serviceInput, serviceOutput);
+	    doGenerateCharacterRequest(serviceInput, serviceOutput);
 	    break;
 	case "HELP":
 	    doHelpRequest(serviceInput, serviceOutput);
 	    break;
 	case "START_OF_CONVERSATION":
-	    doHelloRequest(serviceInput, serviceOutput);
+	    doGenerateCharacterRequest(serviceInput, serviceOutput);
 	    break;
 	case "END_OF_CONVERSATION":
 	    doGoodbyeRequest(serviceInput, serviceOutput);
 	    break;
 	case "CANCEL":
-	    doCancelRequest(serviceInput, serviceOutput);
+	    doStopRequest(serviceInput, serviceOutput);
 	    break;
 	case "STOP":
 	    doStopRequest(serviceInput, serviceOutput);
 	    break;
 	case "REPEAT":
 	    doRepeatRequest(serviceInput, serviceOutput);
-	    break;
-	case "YES":
-	    doYesRequest(serviceInput, serviceOutput);
-	    break;
-	case "NO":
-	    doNoRequest(serviceInput, serviceOutput);
 	    break;
 	default:
 	    break;
