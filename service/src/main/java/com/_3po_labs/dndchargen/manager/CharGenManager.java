@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,18 @@ public class CharGenManager {
     
     private static final String[] META_SUBJECT_VALUES = new String[] { "REPEAT" };
     private static final Set<String> META_SUBJECTS = new HashSet<String>(Arrays.asList(META_SUBJECT_VALUES));
+
+    private static String[] repeatHeadings = {
+        "Listen the fuck up this time, it's a",
+        "I said, it's a",
+        "Pay attention bro, it's a gotdamn",
+        "That's right, it's a",
+        "You heard me just fine, it's a fucking",
+        "I'll tell you again, but only because I love talking about my fucking",
+        "Ya snooze ya lose. Shit, fine. It's a",
+        "How did you already forget that shit? It's a fucking",
+        "Repeat that? It's a gotdamn"
+        };
 
     protected void doHelpRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	serviceOutput.getVoiceOutput()
@@ -95,7 +108,7 @@ public class CharGenManager {
 	ConversationHistoryEntry entry = ConversationHistoryUtils.getLastNonMetaRequestBySubject(serviceInput.getMetadata().getConversationHistory(), META_SUBJECTS);
 	CharGenMetadata inputMetadata = (CharGenMetadata) entry.getMetadata();
 
-	String heading = inputMetadata.getHeading();
+	String heading = generateRandomRepeatHeading();
 	String character = inputMetadata.getCharacter();
 	
 	serviceOutput.getVoiceOutput().setSsmltext(heading + " " + character);
@@ -150,9 +163,15 @@ public class CharGenManager {
 	if(input == null){
 	    return null;
 	}
-	String output = input.replaceAll("fucking", "<phoneme ph=\"fʌkIn\" />");
+	String output = input.toLowerCase();
+	output = output.replaceAll("fucking", "<phoneme ph=\"fʌkIn\" />");
 	output = output.replaceAll("shit", "<phoneme ph=\"ʃIt\" />");
+	output = output.replaceAll("fuck", "<phoneme ph=\"fʌk\" />");
 	
 	return output;
+    }
+    
+    public static String generateRandomRepeatHeading(){
+	return repeatHeadings[RandomUtils.nextInt(0, repeatHeadings.length)];
     }
 }

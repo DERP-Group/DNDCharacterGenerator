@@ -10,7 +10,13 @@ public class WTFIMDNDCData {
       "You think your character is cool? My character is a fucking", //Everything after this is not part of the origi
       "I'm about to put together a gotdamn",
       "Check out how I roleplay the shit out of a",
-      "Feast your eyes on my gotdamn"
+      "Feast your eyes on my gotdamn",
+      "Holy shit, get a load of my",
+      "Shit bro, you need to see my",
+      "Lemme introduce y'all to my fucking",
+      "You bet your ass you're gonna like my",
+      "I just rolled the best fucking character. It's a",
+      "Hold on to your butts, cause I just made a"
       };
   
   private String[] responses = {
