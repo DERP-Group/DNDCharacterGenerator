@@ -20,9 +20,19 @@
 
 package com._3po_labs.dndchargen.manager;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com._3po_labs.dndchargen.CharGenMetadata;
 import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCUtility;
+import com.derpgroup.derpwizard.voice.model.ConversationHistoryEntry;
 import com.derpgroup.derpwizard.voice.model.ServiceInput;
 import com.derpgroup.derpwizard.voice.model.ServiceOutput;
+import com.derpgroup.derpwizard.voice.util.ConversationHistoryUtils;
 
 /**
  * Manager class for dispatching input messages.
@@ -35,9 +45,14 @@ import com.derpgroup.derpwizard.voice.model.ServiceOutput;
  */
 public class CharGenManager {
 
-    private static WTFIMDNDCUtility charGenUtility = WTFIMDNDCUtility.getInstance();
+    private static final Logger LOG = LoggerFactory.getLogger(CharGenManager.class);
 
-    protected void doHelpRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+    private static WTFIMDNDCUtility charGenUtility = WTFIMDNDCUtility.getInstance();
+    
+    private static final String[] META_SUBJECT_VALUES = new String[] { "REPEAT" };
+    private static final Set<String> META_SUBJECTS = new HashSet<String>(Arrays.asList(META_SUBJECT_VALUES));
+
+    protected void doHelpRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	serviceOutput.getVoiceOutput()
 		.setSsmltext("I'd love to help, but I don't have any help topics programmed yet.");
 	serviceOutput.getVoiceOutput()
@@ -45,46 +60,64 @@ public class CharGenManager {
 	serviceOutput.setConversationEnded(true);
     }
 
-    protected void doHelloRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+    protected void doHelloRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	String heading = charGenUtility.generateHeading();
 	String character = charGenUtility.generateCharacter();
-	serviceOutput.getVoiceOutput().setSsmltext(heading + ". " + character);
+	serviceOutput.getVoiceOutput().setSsmltext(heading + " " + character);
 	serviceOutput.getVisualOutput().setTitle(heading);
 	serviceOutput.getVisualOutput().setText(character);
-	serviceOutput.setConversationEnded(true);
+	
+	CharGenMetadata outputMetadata = (CharGenMetadata)serviceOutput.getMetadata();
+	outputMetadata.setCharacter(character);
+	outputMetadata.setHeading(heading);
+
+	ConversationHistoryEntry entry = ConversationHistoryUtils.getLastNonMetaRequestBySubject(serviceOutput.getMetadata().getConversationHistory(), META_SUBJECTS);
+	CharGenMetadata inputMetadata = (CharGenMetadata) entry.getMetadata();
+	inputMetadata.setCharacter(character);
+	inputMetadata.setHeading(heading);
+	
+	serviceOutput.setConversationEnded(false);
     }
 
-    protected void doGoodbyeRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+    protected void doGoodbyeRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	serviceOutput.getVoiceOutput().setSsmltext("Goodbye!");
 	serviceOutput.getVoiceOutput().setPlaintext("Goodbye!");
 	serviceOutput.setConversationEnded(true);
     }
 
-    protected void doCancelRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+    protected void doCancelRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	serviceOutput.getVoiceOutput().setSsmltext("Cancelling");
 	serviceOutput.getVoiceOutput().setPlaintext("Cancelling");
 	serviceOutput.setConversationEnded(true);
     }
 
-    protected void doStopRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+    protected void doStopRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	serviceOutput.getVoiceOutput().setSsmltext("Stopping");
 	serviceOutput.getVoiceOutput().setPlaintext("Stopping");
 	serviceOutput.setConversationEnded(true);
     }
 
-    protected void doRepeatRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput().setSsmltext("Repeating");
-	serviceOutput.getVoiceOutput().setPlaintext("Repeating");
-	serviceOutput.setConversationEnded(true);
+    protected void doRepeatRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
+	ConversationHistoryEntry entry = ConversationHistoryUtils.getLastNonMetaRequestBySubject(serviceInput.getMetadata().getConversationHistory(), META_SUBJECTS);
+	CharGenMetadata inputMetadata = (CharGenMetadata) entry.getMetadata();
+
+	String heading = inputMetadata.getHeading();
+	String character = inputMetadata.getCharacter();
+	
+	serviceOutput.getVoiceOutput().setSsmltext(heading + " " + character);
+	serviceOutput.getVisualOutput().setTitle(heading);
+	serviceOutput.getVisualOutput().setText(character);
+	
+	serviceOutput.setConversationEnded(false);
     }
 
-    protected void doYesRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+    protected void doYesRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	serviceOutput.getVoiceOutput().setSsmltext("Yes");
 	serviceOutput.getVoiceOutput().setPlaintext("Yes");
 	serviceOutput.setConversationEnded(true);
     }
 
-    protected void doNoRequest(ServiceInput voiceInput, ServiceOutput serviceOutput) {
+    protected void doNoRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	serviceOutput.getVoiceOutput().setSsmltext("No");
 	serviceOutput.getVoiceOutput().setPlaintext("No");
 	serviceOutput.setConversationEnded(true);
@@ -100,6 +133,8 @@ public class CharGenManager {
      * @param serviceOutput
      */
     public void handleRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
+	String subject = serviceInput.getSubject();
+	LOG.info("Request subject: " + subject);
 	switch (serviceInput.getSubject()) {
 	case "GENERATE_CHARACTER":
 	    doHelloRequest(serviceInput, serviceOutput);
@@ -131,5 +166,17 @@ public class CharGenManager {
 	default:
 	    break;
 	}
+	
+	serviceOutput.getVoiceOutput().setSsmltext(profanityToSsml(serviceOutput.getVoiceOutput().getSsmltext()));
+    }
+    
+    public static String profanityToSsml(String input){
+	if(input == null){
+	    return null;
+	}
+	String output = input.replaceAll("fucking", "<phoneme ph=\"fʌkIn\" />");
+	output = output.replaceAll("shit", "<phoneme ph=\"ʃIt\" />");
+	
+	return output;
     }
 }

@@ -38,6 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com._3po_labs.dndchargen.CharGenMetadata;
+import com._3po_labs.dndchargen.MixInModule;
 import com._3po_labs.dndchargen.manager.CharGenManager;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.json.SpeechletResponseEnvelope;
@@ -75,9 +77,16 @@ public class CharGenAlexaResource {
   private static final String ALEXA_VERSION = "1.1.1";
 
   private CharGenManager manager;
+  private ObjectMapper mapper;
+
+  static {
+    ConversationHistoryUtils.getMapper().registerModule(new MixInModule());
+  }
 
   public CharGenAlexaResource(MainConfig config, Environment env) {
     manager = new CharGenManager();
+
+    mapper = new ObjectMapper().registerModule(new MixInModule());
   }
 
   /**
@@ -88,8 +97,7 @@ public class CharGenAlexaResource {
   @POST
   public SpeechletResponseEnvelope doAlexaRequest(@NotNull @Valid SpeechletRequestEnvelope request, @HeaderParam("SignatureCertChainUrl") String signatureCertChainUrl, 
       @HeaderParam("Signature") String signature, @QueryParam("testFlag") Boolean testFlag){
-
-    ObjectMapper mapper = new ObjectMapper();
+      
     CommonMetadata outputMetadata = null;
     try{
       if (request.getRequest() == null) {
@@ -100,12 +108,13 @@ public class CharGenAlexaResource {
       }
       
       // Build the Input Metadata object here
-      CommonMetadata inputMetadata = mapper.convertValue(request.getSession().getAttributes(), new TypeReference<CommonMetadata>(){});  // this comes from the client-side session
+      CommonMetadata inputMetadata = mapper.convertValue(request.getSession().getAttributes(), new TypeReference<CharGenMetadata>(){});  // this comes from the client-side session
       // Populate it with other information here, as required by your service. UserAccount info, echoId, serviceId, info from a database, etc
       
       ///////////////////////////////////
       // Build the ServiceInput object //
       ///////////////////////////////////
+//      CharGenServiceInput serviceInput = new CharGenServiceInput();
       ServiceInput serviceInput = new ServiceInput();
       serviceInput.setMetadata(inputMetadata);
       Map<String, String> messageAsMap = AlexaUtils.getMessageAsMap(request.getRequest());
