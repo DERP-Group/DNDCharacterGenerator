@@ -1,4 +1,14 @@
 {
+  "charGenConfig":{},
+  "daoConfig":{
+    "userPreferencesDaoConfig":{
+      "type":"DYNAMO",
+      "accessKey":null,
+      "secretKey":null,
+      "tableName":"UserPreferences",
+      "namespace":"DND_CHARACTER_GENERATOR"
+    }  
+  },
   "server": {
     "applicationConnectors": [
       {

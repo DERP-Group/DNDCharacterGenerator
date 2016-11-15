@@ -26,10 +26,10 @@ import io.dropwizard.setup.Environment;
 
 import java.io.IOException;
 
+import com._3po_labs.dndchargen.configuration.CharGenMainConfig;
 import com._3po_labs.dndchargen.resource.CharGenAlexaResource;
 import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCData;
 import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCUtility;
-import com.derpgroup.derpwizard.configuration.MainConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -40,17 +40,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author Rusty Gerard
  * @since 0.0.1
  */
-public class App extends Application<MainConfig> {
+public class App extends Application<CharGenMainConfig> {
 
   public static void main(String[] args) throws Exception {
     new App().run(args);
   }
 
   @Override
-  public void initialize(Bootstrap<MainConfig> bootstrap) {}
+  public void initialize(Bootstrap<CharGenMainConfig> bootstrap) {}
 
   @Override
-  public void run(MainConfig config, Environment environment) throws IOException {
+  public void run(CharGenMainConfig config, Environment environment) throws IOException {
       ObjectMapper mapper = environment.getObjectMapper();
       if (config.isPrettyPrint()) {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);

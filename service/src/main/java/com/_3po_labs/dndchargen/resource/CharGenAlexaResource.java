@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com._3po_labs.dndchargen.CharGenMetadata;
 import com._3po_labs.dndchargen.MixInModule;
+import com._3po_labs.dndchargen.configuration.CharGenMainConfig;
 import com._3po_labs.dndchargen.manager.CharGenManager;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.json.SpeechletResponseEnvelope;
@@ -47,7 +48,6 @@ import com.amazon.speech.speechlet.SpeechletRequest;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
 import com.amazon.speech.ui.SsmlOutputSpeech;
-import com.derpgroup.derpwizard.configuration.MainConfig;
 import com.derpgroup.derpwizard.voice.alexa.AlexaUtils;
 import com.derpgroup.derpwizard.voice.exception.DerpwizardException;
 import com.derpgroup.derpwizard.voice.exception.DerpwizardException.DerpwizardExceptionReasons;
@@ -83,8 +83,8 @@ public class CharGenAlexaResource {
     ConversationHistoryUtils.getMapper().registerModule(new MixInModule());
   }
 
-  public CharGenAlexaResource(MainConfig config, Environment env) {
-    manager = new CharGenManager();
+  public CharGenAlexaResource(CharGenMainConfig config, Environment env) {
+    manager = new CharGenManager(config, env);
 
     mapper = new ObjectMapper().registerModule(new MixInModule());
   }
@@ -106,6 +106,9 @@ public class CharGenAlexaResource {
       if(testFlag == null || testFlag == false){ 
         AlexaUtils.validateAlexaRequest(request, signatureCertChainUrl, signature);
       }
+      
+      //TODO convert to retrieve via account linking.
+      String userId = request.getSession().getUser().getUserId();
       
       // Build the Input Metadata object here
       CommonMetadata inputMetadata = mapper.convertValue(request.getSession().getAttributes(), new TypeReference<CharGenMetadata>(){});  // this comes from the client-side session
@@ -132,6 +135,7 @@ public class CharGenAlexaResource {
       ConversationHistoryUtils.registerRequestInConversationHistory(subject, messageAsMap, outputMetadata, outputMetadata.getConversationHistory()); // build the conversation history for the outputMetadata
       serviceOutput.setMetadata(outputMetadata);
       
+      serviceInput.setUserId(userId);
       // Call the service
       manager.handleRequest(serviceInput, serviceOutput);
   
