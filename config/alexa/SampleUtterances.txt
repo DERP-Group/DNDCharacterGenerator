@@ -21,4 +21,8 @@ GENERATE_CHARACTER roll me another
 GENERATE_CHARACTER generate me another
 GENERATE_CHARACTER again
 GENERATE_CHARACTER do it again
-WHATISMYID what is my id
+ENABLE_PROFANITY enable profanity
+ENABLE_PROFANITY turn profanity on
+DISABLE_PROFANITY disable profanity
+DISABLE_PROFANITY turn profanity off
+AMAZON.NoIntent no

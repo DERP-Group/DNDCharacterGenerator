@@ -4,9 +4,6 @@
       "intent": "GENERATE_CHARACTER"
     },
     {
-      "intent": "WHATISMYID"
-    },
-    {
       "intent":"AMAZON.RepeatIntent"
     },
     {
@@ -14,6 +11,18 @@
     },
     {
       "intent":"AMAZON.CancelIntent"
+    },
+    {
+      "intent":"AMAZON.YesIntent"
+    },
+    {
+      "intent":"AMAZON.NoIntent"
+    },
+    {
+      "intent":"ENABLE_PROFANITY"
+    },
+    {
+      "intent":"DISABLE_PROFANITY"
     }
   ]
 }
