@@ -3,13 +3,17 @@ package com._3po_labs.dndchargen.configuration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.derpgroup.derpwizard.configuration.UserPreferencesDAOConfig;
+import com._3po_labs.derpwizard.persistence.configuration.AccountLinkingDAOConfig;
+import com._3po_labs.derpwizard.persistence.configuration.UserPreferencesDAOConfig;
 
 public class CharGenDAOConfig {
 
     @Valid
     @NotNull
     private UserPreferencesDAOConfig userPreferencesDaoConfig;
+    @Valid
+    @NotNull
+    private AccountLinkingDAOConfig accountLinkingDaoConfig;
 
     public UserPreferencesDAOConfig getUserPreferencesDaoConfig() {
         return userPreferencesDaoConfig;
@@ -17,5 +21,13 @@ public class CharGenDAOConfig {
 
     public void setUserPreferencesDaoConfig(UserPreferencesDAOConfig userPreferencesDaoConfig) {
         this.userPreferencesDaoConfig = userPreferencesDaoConfig;
+    }
+
+    public AccountLinkingDAOConfig getAccountLinkingDaoConfig() {
+        return accountLinkingDaoConfig;
+    }
+
+    public void setAccountLinkingDaoConfig(AccountLinkingDAOConfig accountLinkingDaoConfig) {
+        this.accountLinkingDaoConfig = accountLinkingDaoConfig;
     }
 }

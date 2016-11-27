@@ -5,9 +5,15 @@
       "type":"DYNAMO",
       "accessKey":null,
       "secretKey":null,
-      "tableName":"UserPreferences",
+      "tableName":"UserPreferences_Test",
       "namespace":"DND_CHARACTER_GENERATOR"
-    }  
+    },
+    "accountLinkingDaoConfig":{
+      "type":"DYNAMO",
+      "accessKey":null,
+      "secretKey":null,
+      "tableName":"AccountLinking_Test"
+    }
   },
   "server": {
     "applicationConnectors": [

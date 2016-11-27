@@ -3,7 +3,8 @@ package com._3po_labs.dndchargen.configuration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.derpgroup.derpwizard.configuration.MainConfig;
+import com._3po_labs.derpwizard.core.configuration.MainConfig;
+
 
 public class CharGenMainConfig extends MainConfig{
 

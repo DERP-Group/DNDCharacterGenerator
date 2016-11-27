@@ -26,14 +26,14 @@ import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com._3po_labs.derpwizard.core.exception.DerpwizardException;
+import com._3po_labs.derpwizard.persistence.dao.UserPreferencesDAO;
+import com._3po_labs.derpwizard.persistence.dao.factory.UserPreferencesDAOFactory;
 import com._3po_labs.dndchargen.CharGenMetadata;
 import com._3po_labs.dndchargen.QuestionTopic;
 import com._3po_labs.dndchargen.configuration.CharGenMainConfig;
 import com._3po_labs.dndchargen.model.preferences.CharGenPreferences;
 import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCUtility;
-import com.derpgroup.derpwizard.dao.UserPreferencesDAO;
-import com.derpgroup.derpwizard.dao.impl.UserPreferencesDAOFactory;
-import com.derpgroup.derpwizard.voice.exception.DerpwizardException;
 import com.derpgroup.derpwizard.voice.model.ConversationHistoryEntry;
 import com.derpgroup.derpwizard.voice.model.ServiceInput;
 import com.derpgroup.derpwizard.voice.model.ServiceOutput;
