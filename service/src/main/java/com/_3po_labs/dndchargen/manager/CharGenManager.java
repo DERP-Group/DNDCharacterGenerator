@@ -69,6 +69,17 @@ public class CharGenManager {
         "Repeat that? It's a gotdamn"
         };
     
+    private static String[] delayedVoiceQuestions = {
+	"What else can I do for you?",
+	"What else do you want to do?",
+	"How else can I help you?",
+	"What else do you need bro?",
+	"What should I do now?",
+	"What else would you like me to do?",
+	"Anything else I should do?",
+	"Anything else you want to do?"
+    };
+    
     private UserPreferencesDAO userPreferencesDao;
     
     public CharGenManager(CharGenMainConfig config, Environment env){
@@ -92,7 +103,6 @@ public class CharGenManager {
 	    throw new DerpwizardException("Sorry, but I can't for the life of me seem to figure out who you are or how you got here.");
 	}
 	
-    	LOG.info("Request subject: " + subject);
 	switch (subject) {
 	case "GENERATE_CHARACTER":
 	    retrieveUserPreferences(userId);
@@ -137,15 +147,19 @@ public class CharGenManager {
 
     private void filterServiceOutput(ServiceOutput serviceOutput, CharGenPreferences userPreferences) {
 	boolean allowProfanity = userPreferences == null ? false : userPreferences.isAllowProfanity();
-	String filteredText = serviceOutput.getVoiceOutput().getSsmltext();
+	String filteredPrimaryText = serviceOutput.getVoiceOutput().getSsmltext();
+	String filteredDelayedText = serviceOutput.getDelayedVoiceOutput().getSsmltext();
 	if(allowProfanity){
-	    filteredText = profanityToSsml(filteredText);
+	    filteredPrimaryText = profanityToSsml(filteredPrimaryText);
+	    filteredDelayedText = profanityToSsml(filteredDelayedText);
 	}else{
-	    filteredText = profanityToNofanity(filteredText);
+	    filteredPrimaryText = profanityToNofanity(filteredPrimaryText);
+	    filteredDelayedText = profanityToNofanity(filteredDelayedText);
 	    String filteredTitle = profanityToNofanity(serviceOutput.getVisualOutput().getTitle());
 	    serviceOutput.getVisualOutput().setTitle(filteredTitle);
 	}
-	serviceOutput.getVoiceOutput().setSsmltext(filteredText);
+	serviceOutput.getVoiceOutput().setSsmltext(filteredPrimaryText);
+	serviceOutput.getDelayedVoiceOutput().setSsmltext(filteredDelayedText);
     }
     
     private CharGenPreferences retrieveUserPreferences(String userId){
@@ -164,9 +178,11 @@ public class CharGenManager {
     	}
 	String heading = charGenUtility.generateHeading();
 	String character = charGenUtility.generateCharacter();
+	String delayedVoice = charGenUtility.generateResponse();
 	serviceOutput.getVoiceOutput().setSsmltext(heading + " " + character);
 	serviceOutput.getVisualOutput().setTitle(heading);
 	serviceOutput.getVisualOutput().setText(character);
+	serviceOutput.getDelayedVoiceOutput().setSsmltext(delayedVoice + " " + generateRandomDelayedVoiceQuestion());
 	
 	CharGenMetadata outputMetadata = (CharGenMetadata)serviceOutput.getMetadata();
 	outputMetadata.setCharacter(character);
@@ -182,22 +198,23 @@ public class CharGenManager {
     }
 
     protected void doHelpRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput()
-		.setSsmltext("I'd love to help, but I don't have any help topics programmed yet.");
-	serviceOutput.getVoiceOutput()
-		.setPlaintext("I'd love to help, but I don't have any help topics programmed yet.");
-	serviceOutput.setConversationEnded(true);
+	String helpText = "It's easy, just ask: 'Who is my character?'. You can also say: 'repeat', or 'another', or you can ask to enable or disable profanity.";
+	serviceOutput.getVoiceOutput().setSsmltext(helpText);
+	serviceOutput.getVisualOutput().setText(helpText + "\n\n Full usage can be found here: http://www.3po-labs.com/");
+	serviceOutput.getVisualOutput().setTitle("Character Generator Help");
+	serviceOutput.getDelayedVoiceOutput().setSsmltext(generateRandomDelayedVoiceQuestion());
+	serviceOutput.setConversationEnded(false);
     }
 
     protected void doGoodbyeRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput().setSsmltext("Goodbye!");
-	serviceOutput.getVoiceOutput().setPlaintext("Goodbye!");
+	serviceOutput.getVoiceOutput().setSsmltext("See ya!");
+	serviceOutput.getVoiceOutput().setPlaintext("See ya!");
 	serviceOutput.setConversationEnded(true);
     }
 
     protected void doStopRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	serviceOutput.getVoiceOutput().setSsmltext("You bet your ass.");
-	serviceOutput.getVoiceOutput().setPlaintext("You bet your ass.");
+	serviceOutput.getVoiceOutput().setSsmltext("You bet your bottom.");
+	serviceOutput.getVoiceOutput().setPlaintext("You bet your bottom.");
 	serviceOutput.setConversationEnded(true);
     }
 
@@ -296,6 +313,7 @@ public class CharGenManager {
 	output = output.replaceAll("fucking", "<phoneme ph=\"fʌkIn\" />");
 	output = output.replaceAll("shit", "<phoneme ph=\"ʃIt\" />");
 	output = output.replaceAll("fuck", "<phoneme ph=\"fʌk\" />");
+	output = output.replaceAll("bitchy", "<phoneme ph=\"bItʃi\" />");
 	
 	return output;
     }
@@ -308,12 +326,18 @@ public class CharGenManager {
 	output = output.replaceAll("fucking", "friggin");
 	output = output.replaceAll("shit", "crap");
 	output = output.replaceAll("fuck", "f.");
-	output = output.replaceAll("gotdamn", "gotdang.");
+	output = output.replaceAll("gotdamn", "got dang.");
+	output = output.replaceAll("ass", "bottom");
+	output = output.replaceAll("bitchy", "prissy");
 	
 	return output;
     }
     
     public static String generateRandomRepeatHeading(){
 	return repeatHeadings[RandomUtils.nextInt(0, repeatHeadings.length)];
+    }
+    
+    public static String generateRandomDelayedVoiceQuestion(){
+	return delayedVoiceQuestions[RandomUtils.nextInt(0, delayedVoiceQuestions.length)];
     }
 }

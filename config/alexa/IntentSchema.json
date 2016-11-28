@@ -1,7 +1,35 @@
 {
   "intents": [
     {
-      "intent": "GENERATE_CHARACTER"
+      "intent": "GENERATE_CHARACTER",
+      "slots":[
+          {
+      		"name":"interrogative",
+      		"type":"INTERROGATIVES"
+          },
+        {
+          "name":"character_word",
+          "type":"CHARACTER_WORDS"
+        }
+      ]
+    },
+    {
+      "intent":"ENABLE_PROFANITY",
+      "slots":[
+        {
+          "name":"profanity_word",
+          "type":"PROFANITY_WORDS"
+        }
+      ]
+    },
+    {
+      "intent":"DISABLE_PROFANITY",
+      "slots":[
+        {
+          "name":"profanity_word",
+          "type":"PROFANITY_WORDS"
+        }
+      ]
     },
     {
       "intent":"AMAZON.RepeatIntent"
@@ -19,10 +47,7 @@
       "intent":"AMAZON.NoIntent"
     },
     {
-      "intent":"ENABLE_PROFANITY"
-    },
-    {
-      "intent":"DISABLE_PROFANITY"
+      "intent":"AMAZON.HelpIntent"
     }
   ]
 }

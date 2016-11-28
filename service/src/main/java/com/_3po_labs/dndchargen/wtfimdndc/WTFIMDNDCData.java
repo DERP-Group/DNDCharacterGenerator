@@ -20,11 +20,11 @@ public class WTFIMDNDCData {
       };
   
   private String[] responses = {
-      "That sounds fucking terrible",
-      "Give me a-fucking-nother one",
-      "I don't really give a fuck about that guy",
-      "I've already fucking roleplayed that one",
-      "That doesn't make any fucking sense"
+      "That sounds fucking terrible.",
+      "Wow, I'd go for a-fucking-nother one.",
+      "I don't really give a fuck about that guy.",
+      "I've already fucking roleplayed that one.",
+      "Well, that doesn't make any fucking sense."
       };
   
   private String[] adjectives = {

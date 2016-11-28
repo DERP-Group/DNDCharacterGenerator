@@ -1,8 +1,6 @@
 /**
  * Copyright (C) 2015 David Phillips
  * Copyright (C) 2015 Eric Olson
- * Copyright (C) 2015 Rusty Gerard
- * Copyright (C) 2015 Paul Winters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +19,7 @@
 package com._3po_labs.dndchargen.resource;
 
 import java.util.Map;
+import java.util.UUID;
 
 import io.dropwizard.setup.Environment;
 
@@ -40,6 +39,9 @@ import org.slf4j.LoggerFactory;
 
 import com._3po_labs.derpwizard.core.exception.DerpwizardException;
 import com._3po_labs.derpwizard.core.exception.DerpwizardException.DerpwizardExceptionReasons;
+import com._3po_labs.derpwizard.persistence.dao.AccountLinkingDAO;
+import com._3po_labs.derpwizard.persistence.dao.factory.AccountLinkingDAOFactory;
+import com._3po_labs.derpwizard.persistence.model.accountlinking.ExternalAccountLink;
 import com._3po_labs.dndchargen.CharGenMetadata;
 import com._3po_labs.dndchargen.MixInModule;
 import com._3po_labs.dndchargen.configuration.CharGenMainConfig;
@@ -64,8 +66,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author David
  * @author Eric
- * @author Rusty
- * @author Paul
  * @since 0.0.1
  */
 @Path("/dnd-character-generator/alexa")
@@ -74,9 +74,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class CharGenAlexaResource {
 
   private static final Logger LOG = LoggerFactory.getLogger(CharGenAlexaResource.class);
-  private static final String ALEXA_VERSION = "1.1.1";
+  private static final String ALEXA_VERSION = "0.0.1";
 
   private CharGenManager manager;
+  private AccountLinkingDAO accountLinkingDAO;
   private ObjectMapper mapper;
 
   static {
@@ -85,6 +86,7 @@ public class CharGenAlexaResource {
 
   public CharGenAlexaResource(CharGenMainConfig config, Environment env) {
     manager = new CharGenManager(config, env);
+    accountLinkingDAO = AccountLinkingDAOFactory.getDAO(config.getDaoConfig().getAccountLinkingDaoConfig());
 
     mapper = new ObjectMapper().registerModule(new MixInModule());
   }
@@ -107,17 +109,31 @@ public class CharGenAlexaResource {
         AlexaUtils.validateAlexaRequest(request, signatureCertChainUrl, signature);
       }
       
-      //TODO convert to retrieve via account linking.
-      String userId = request.getSession().getUser().getUserId();
-      
       // Build the Input Metadata object here
-      CommonMetadata inputMetadata = mapper.convertValue(request.getSession().getAttributes(), new TypeReference<CharGenMetadata>(){});  // this comes from the client-side session
+      CharGenMetadata inputMetadata = mapper.convertValue(request.getSession().getAttributes(), new TypeReference<CharGenMetadata>(){});  // this comes from the client-side session
       // Populate it with other information here, as required by your service. UserAccount info, echoId, serviceId, info from a database, etc
+      
+      String userId;
+      if(inputMetadata.getUserId() == null){
+	  LOG.debug("No userId provided in session, doing lookup.");
+	  String alexaUserId = request.getSession().getUser().getUserId();
+	  ExternalAccountLink accountLink = accountLinkingDAO.getAccountLinkByExternalUserIdAndExternalSystemName(alexaUserId, "AMAZON_ALEXA");
+	  if(accountLink == null){
+	      accountLink = new ExternalAccountLink();
+	      accountLink.setExternalSystemName("AMAZON_ALEXA");
+	      accountLink.setExternalUserId(alexaUserId);
+	      accountLink.setUserId(UUID.randomUUID().toString());
+	      accountLinkingDAO.createAccountLink(accountLink);
+	  }
+	  userId = accountLink.getUserId();
+      }else{
+	  LOG.debug("Found userId '" + inputMetadata.getUserId() + "' in session.");
+	  userId = inputMetadata.getUserId();
+      }
       
       ///////////////////////////////////
       // Build the ServiceInput object //
       ///////////////////////////////////
-//      CharGenServiceInput serviceInput = new CharGenServiceInput();
       ServiceInput serviceInput = new ServiceInput();
       serviceInput.setMetadata(inputMetadata);
       Map<String, String> messageAsMap = AlexaUtils.getMessageAsMap(request.getRequest());
@@ -132,6 +148,7 @@ public class CharGenAlexaResource {
       ////////////////////////////////////
       ServiceOutput serviceOutput = new ServiceOutput();
       outputMetadata = mapper.convertValue(request.getSession().getAttributes(), new TypeReference<CommonMetadata>(){});  // this gets sent to the client-side session
+      outputMetadata.setUserId(userId);
       ConversationHistoryUtils.registerRequestInConversationHistory(subject, messageAsMap, outputMetadata, outputMetadata.getConversationHistory()); // build the conversation history for the outputMetadata
       serviceOutput.setMetadata(outputMetadata);
       
@@ -192,7 +209,7 @@ public class CharGenAlexaResource {
       LOG.debug(e.getMessage());
       return new DerpwizardExceptionAlexaWrapper(e, ALEXA_VERSION,mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
     }catch(Throwable t){
-      LOG.debug(t.getMessage());
+      LOG.error(t.getMessage());
       return new DerpwizardExceptionAlexaWrapper(new DerpwizardException(t.getMessage()),ALEXA_VERSION, mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
     }
   }

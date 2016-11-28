@@ -12,7 +12,7 @@
       "type":"DYNAMO",
       "accessKey":null,
       "secretKey":null,
-      "tableName":"AccountLinking_Test"
+      "tableName":"AccountLinks_Test"
     }
   },
   "server": {

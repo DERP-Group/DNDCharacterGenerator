@@ -1,28 +1,25 @@
-GENERATE_CHARACTER who is my character
-GENERATE_CHARACTER who is my d.n.d. character
-GENERATE_CHARACTER who is my d. and d. character
-GENERATE_CHARACTER who the fuck is my character
-GENERATE_CHARACTER who the fuck is my d.n.d. character
-GENERATE_CHARACTER who the fuck is my d. and d. character
-GENERATE_CHARACTER who is my fucking character
-GENERATE_CHARACTER who is my fucking d.n.d. character
-GENERATE_CHARACTER who is my fucking d. and d. character
-GENERATE_CHARACTER what is my character
-GENERATE_CHARACTER what is my d.n.d. character
-GENERATE_CHARACTER what is my d. and d. character
-GENERATE_CHARACTER what the fuck is my character
-GENERATE_CHARACTER what the fuck is my d.n.d. character
-GENERATE_CHARACTER what the fuck is my d. and d. character
-GENERATE_CHARACTER what is my fucking character
-GENERATE_CHARACTER what is my fucking d.n.d. character
-GENERATE_CHARACTER what is my fucking d. and d. character
+GENERATE_CHARACTER {interrogative} is my {character_word}
+GENERATE_CHARACTER {interrogative} the fuck is my {character_word}
+GENERATE_CHARACTER {interrogative} is my fucking {character_word}
+GENERATE_CHARACTER {interrogative} should my {character_word} be
+GENERATE_CHARACTER {interrogative} the fuck should my {character_word} be
+GENERATE_CHARACTER {interrogative} should I roll
+GENERATE_CHARACTER {interrogative} the fuck should I roll
+GENERATE_CHARACTER roll me a {character_word}
+GENERATE_CHARACTER roll me a fucking {character_word}
+GENERATE_CHARACTER roll a {character_word} for me
+GENERATE_CHARACTER roll a fucking {character_word} for me
+GENERATE_CHARACTER generate me a {character_word}
+GENERATE_CHARACTER generate me a fucking {character_word}
+GENERATE_CHARACTER generate a {character_word} for me
+GENERATE_CHARACTER generate a fucking {character_word} for me
 GENERATE_CHARACTER another
 GENERATE_CHARACTER roll me another
 GENERATE_CHARACTER generate me another
 GENERATE_CHARACTER again
 GENERATE_CHARACTER do it again
-ENABLE_PROFANITY enable profanity
-ENABLE_PROFANITY turn profanity on
-DISABLE_PROFANITY disable profanity
-DISABLE_PROFANITY turn profanity off
-AMAZON.NoIntent no
+GENERATE_CHARACTER reroll
+ENABLE_PROFANITY enable {profanity_word}
+ENABLE_PROFANITY turn {profanity_word} on
+DISABLE_PROFANITY disable {profanity_word}
+DISABLE_PROFANITY turn {profanity_word} off
