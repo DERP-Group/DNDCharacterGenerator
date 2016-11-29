@@ -1,4 +1,4 @@
-package com._3po_labs.dndchargen;
+package com._3po_labs.rpgchargen;
 
 public enum QuestionTopic {
 

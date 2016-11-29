@@ -1,8 +1,6 @@
 /**
  * Copyright (C) 2015 David Phillips
  * Copyright (C) 2015 Eric Olson
- * Copyright (C) 2015 Rusty Gerard
- * Copyright (C) 2015 Paul Winters
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com._3po_labs.dndchargen;
+package com._3po_labs.rpgchargen;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -26,20 +24,14 @@ import io.dropwizard.setup.Environment;
 
 import java.io.IOException;
 
-import com._3po_labs.dndchargen.configuration.CharGenMainConfig;
-import com._3po_labs.dndchargen.resource.CharGenAlexaResource;
-import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCData;
-import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCUtility;
+import com._3po_labs.rpgchargen.configuration.CharGenMainConfig;
+import com._3po_labs.rpgchargen.resource.CharGenAlexaResource;
+import com._3po_labs.rpgchargen.wtfimdndc.WTFIMDNDCData;
+import com._3po_labs.rpgchargen.wtfimdndc.WTFIMDNDCUtility;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-/**
- * Main method for spinning up the HTTP server.
- *
- * @author Rusty Gerard
- * @since 0.0.1
- */
 public class App extends Application<CharGenMainConfig> {
 
   public static void main(String[] args) throws Exception {

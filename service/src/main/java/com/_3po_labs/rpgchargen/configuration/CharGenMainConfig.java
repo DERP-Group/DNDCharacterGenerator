@@ -1,4 +1,4 @@
-package com._3po_labs.dndchargen.configuration;
+package com._3po_labs.rpgchargen.configuration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

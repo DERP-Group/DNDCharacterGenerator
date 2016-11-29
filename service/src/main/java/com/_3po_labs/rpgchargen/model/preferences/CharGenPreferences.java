@@ -1,4 +1,4 @@
-package com._3po_labs.dndchargen.model.preferences;
+package com._3po_labs.rpgchargen.model.preferences;
 
 public class CharGenPreferences {
 

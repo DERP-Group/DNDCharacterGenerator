@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com._3po_labs.dndchargen.manager;
+package com._3po_labs.rpgchargen.manager;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
 import com._3po_labs.derpwizard.core.exception.DerpwizardException;
 import com._3po_labs.derpwizard.persistence.dao.UserPreferencesDAO;
 import com._3po_labs.derpwizard.persistence.dao.factory.UserPreferencesDAOFactory;
-import com._3po_labs.dndchargen.CharGenMetadata;
-import com._3po_labs.dndchargen.QuestionTopic;
-import com._3po_labs.dndchargen.configuration.CharGenMainConfig;
-import com._3po_labs.dndchargen.model.preferences.CharGenPreferences;
-import com._3po_labs.dndchargen.wtfimdndc.WTFIMDNDCUtility;
+import com._3po_labs.rpgchargen.CharGenMetadata;
+import com._3po_labs.rpgchargen.QuestionTopic;
+import com._3po_labs.rpgchargen.configuration.CharGenMainConfig;
+import com._3po_labs.rpgchargen.model.preferences.CharGenPreferences;
+import com._3po_labs.rpgchargen.wtfimdndc.WTFIMDNDCUtility;
 import com.derpgroup.derpwizard.voice.model.ConversationHistoryEntry;
 import com.derpgroup.derpwizard.voice.model.ServiceInput;
 import com.derpgroup.derpwizard.voice.model.ServiceOutput;
@@ -200,7 +200,7 @@ public class CharGenManager {
     protected void doHelpRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
 	String helpText = "It's easy, just ask: 'Who is my character?'. You can also say: 'repeat', or 'another', or you can ask to enable or disable profanity.";
 	serviceOutput.getVoiceOutput().setSsmltext(helpText);
-	serviceOutput.getVisualOutput().setText(helpText + "\n\n Full usage can be found here: http://www.3po-labs.com/");
+	serviceOutput.getVisualOutput().setText(helpText + "\n\nFull usage can be found here: http://www.3po-labs.com/CharacterGenerator.html \n\nOur skill is based on www.whothefuckismydndcharacter.com by Ryan J. Grant, based on WTFEngine by Justin Windle");
 	serviceOutput.getVisualOutput().setTitle("Character Generator Help");
 	serviceOutput.getDelayedVoiceOutput().setSsmltext(generateRandomDelayedVoiceQuestion());
 	serviceOutput.setConversationEnded(false);

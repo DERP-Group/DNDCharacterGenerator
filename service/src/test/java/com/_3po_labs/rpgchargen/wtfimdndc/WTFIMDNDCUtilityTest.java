@@ -1,9 +1,12 @@
-package com._3po_labs.dndchargen.wtfimdndc;
+package com._3po_labs.rpgchargen.wtfimdndc;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com._3po_labs.rpgchargen.wtfimdndc.WTFIMDNDCData;
+import com._3po_labs.rpgchargen.wtfimdndc.WTFIMDNDCUtility;
 
 public class WTFIMDNDCUtilityTest {
 

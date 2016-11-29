@@ -24,7 +24,7 @@
       {
         "type": "https",
         "port" : 13443,
-        "keyStorePath": "/var/lib/dndchargen/keystore.jks",
+        "keyStorePath": "/var/lib/rpgchargen/keystore.jks",
         "keyStorePassword": "changeit",
         "trustStorePath": "/usr/lib/jvm/jre/lib/security/cacerts",
         "certAlias": "selfsigned"
@@ -45,8 +45,8 @@
         "appenders": [
           {
             "type": "file",
-            "currentLogFilename": "/var/log/dndchargen/dndchargen.log",
-            "archivedLogFilenamePattern": "/var/log/dndchargen/dndchargen-%d.log",
+            "currentLogFilename": "/var/log/rpgchargen/rpgchargen.log",
+            "archivedLogFilenamePattern": "/var/log/rpgchargen/rpgchargen-%d.log",
             "archivedFileCount": 5
           }
         ]

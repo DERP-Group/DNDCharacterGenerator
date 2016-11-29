@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com._3po_labs.dndchargen.resource;
+package com._3po_labs.rpgchargen.resource;
 
 import java.util.Map;
 import java.util.UUID;
@@ -42,10 +42,10 @@ import com._3po_labs.derpwizard.core.exception.DerpwizardException.DerpwizardExc
 import com._3po_labs.derpwizard.persistence.dao.AccountLinkingDAO;
 import com._3po_labs.derpwizard.persistence.dao.factory.AccountLinkingDAOFactory;
 import com._3po_labs.derpwizard.persistence.model.accountlinking.ExternalAccountLink;
-import com._3po_labs.dndchargen.CharGenMetadata;
-import com._3po_labs.dndchargen.MixInModule;
-import com._3po_labs.dndchargen.configuration.CharGenMainConfig;
-import com._3po_labs.dndchargen.manager.CharGenManager;
+import com._3po_labs.rpgchargen.CharGenMetadata;
+import com._3po_labs.rpgchargen.MixInModule;
+import com._3po_labs.rpgchargen.configuration.CharGenMainConfig;
+import com._3po_labs.rpgchargen.manager.CharGenManager;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.json.SpeechletResponseEnvelope;
 import com.amazon.speech.speechlet.SpeechletRequest;
@@ -68,7 +68,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Eric
  * @since 0.0.1
  */
-@Path("/dnd-character-generator/alexa")
+@Path("/rpg-character-generator/alexa")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CharGenAlexaResource {

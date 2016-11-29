@@ -1,4 +1,4 @@
-package com._3po_labs.dndchargen.wtfimdndc;
+package com._3po_labs.rpgchargen.wtfimdndc;
 
 import org.apache.commons.lang3.RandomUtils;
 

@@ -1,4 +1,4 @@
-package com._3po_labs.dndchargen;
+package com._3po_labs.rpgchargen;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
