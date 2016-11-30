@@ -252,6 +252,7 @@ public class CharGenManager {
 	serviceOutput.getVoiceOutput().setSsmltext(heading + " " + character);
 	serviceOutput.getVisualOutput().setTitle(heading);
 	serviceOutput.getVisualOutput().setText(character);
+	serviceOutput.getDelayedVoiceOutput().setSsmltext(charGenUtility.generateResponse() + generateRandomDelayedVoiceQuestion());
 	
 	serviceOutput.setConversationEnded(false);
 	filterServiceOutput(serviceOutput, userPreferences);
@@ -269,10 +270,11 @@ public class CharGenManager {
 	}
 	LOG.info("Initializing preferences for user '" + serviceInput.getUserId() + "'.");
 	serviceOutput.getVoiceOutput()
-		.setSsmltext("Hi! It looks like it's your first time here. Before we start, I should tell you that I sometimes swear when I get excited. Is that okay?");
+		.setSsmltext("Hi! It looks like it's your first time here. Before we start, I should tell you that I sometimes swear when I get excited. Are you comfortable hearing profanity?");
 	serviceOutput.getDelayedVoiceOutput().setSsmltext("Say 'yes' if you're cool with profanity, or 'no' if you want me to keep it P.G.");
 	serviceOutput.getVisualOutput().setTitle("Hi. How do you feel about profanity?");
 	serviceOutput.getVisualOutput().setText("Hi! It looks like this is the first time I've seen you here. Are you okay with me using profanity?\n\n Say 'yes' if that's cool with you, or 'no' if you want me to watch my mouth.");
+	serviceOutput.getDelayedVoiceOutput().setSsmltext("It's okay if you don't want to hear bad words, and you can always change your mind later. Just say 'yes' or 'no'.");
 	serviceOutput.setConversationEnded(false);
     }
 

@@ -12,6 +12,7 @@
 
 	<properties>
 		<derpwizard.version>0.0.2-SNAPSHOT</derpwizard.version>
+		<project.mainClass>com._3po_labs.rpgchargen.App</project.mainClass>
 	</properties>
 
 	<dependencies>

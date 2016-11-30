@@ -20,14 +20,6 @@
       {
         "type": "http",
         "port" : 13080
-      },
-      {
-        "type": "https",
-        "port" : 13443,
-        "keyStorePath": "/var/lib/rpgchargen/keystore.jks",
-        "keyStorePassword": "changeit",
-        "trustStorePath": "/usr/lib/jvm/jre/lib/security/cacerts",
-        "certAlias": "selfsigned"
       }
     ],
     "adminConnectors": [

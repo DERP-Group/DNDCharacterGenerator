@@ -2,6 +2,9 @@ package com._3po_labs.rpgchargen.wtfimdndc;
 
 import org.apache.commons.lang3.RandomUtils;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings
 public class WTFIMDNDCData {
 
   private String[] headings = {

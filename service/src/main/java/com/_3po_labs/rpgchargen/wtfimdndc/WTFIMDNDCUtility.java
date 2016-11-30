@@ -1,5 +1,8 @@
 package com._3po_labs.rpgchargen.wtfimdndc;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings
 public class WTFIMDNDCUtility {
 
   private static WTFIMDNDCUtility instance;
