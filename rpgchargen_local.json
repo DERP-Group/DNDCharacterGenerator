@@ -1,5 +1,7 @@
 {
-  "charGenConfig":{},
+  "charGenConfig":{
+    "shitMode":false
+  },
   "daoConfig":{
     "userPreferencesDaoConfig":{
       "type":"DYNAMO",

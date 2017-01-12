@@ -31,6 +31,7 @@ import com._3po_labs.derpwizard.persistence.dao.UserPreferencesDAO;
 import com._3po_labs.derpwizard.persistence.dao.factory.UserPreferencesDAOFactory;
 import com._3po_labs.rpgchargen.CharGenMetadata;
 import com._3po_labs.rpgchargen.QuestionTopic;
+import com._3po_labs.rpgchargen.configuration.CharGenConfig;
 import com._3po_labs.rpgchargen.configuration.CharGenMainConfig;
 import com._3po_labs.rpgchargen.model.preferences.CharGenPreferences;
 import com._3po_labs.rpgchargen.wtfimdndc.WTFIMDNDCUtility;
@@ -81,9 +82,14 @@ public class CharGenManager {
     };
     
     private UserPreferencesDAO userPreferencesDao;
+    private CharGenConfig charGenConfig;
+    
+    private boolean shitMode = false;
     
     public CharGenManager(CharGenMainConfig config, Environment env){
 	userPreferencesDao = UserPreferencesDAOFactory.build(config.getDaoConfig().getUserPreferencesDaoConfig());
+	charGenConfig = config.getCharGenConfig();
+	shitMode = charGenConfig.isShitMode();
     }
 
     /**
@@ -145,8 +151,9 @@ public class CharGenManager {
 	}
     }
 
-    private void filterServiceOutput(ServiceOutput serviceOutput, CharGenPreferences userPreferences) {
-	boolean allowProfanity = userPreferences == null ? false : userPreferences.isAllowProfanity();
+    private void filterServiceOutput(ServiceOutput serviceOutput, CharGenPreferences userPreferences, boolean shitMode) {
+	
+	boolean allowProfanity = userPreferences == null ? false : (userPreferences.isAllowProfanity() && shitMode);
 	String filteredPrimaryText = serviceOutput.getVoiceOutput().getSsmltext();
 	String filteredDelayedText = serviceOutput.getDelayedVoiceOutput().getSsmltext();
 	if(allowProfanity){
@@ -173,8 +180,12 @@ public class CharGenManager {
 
     protected void doGenerateCharacterRequest(ServiceInput serviceInput, ServiceOutput serviceOutput, CharGenPreferences userPreferences) throws DerpwizardException {
 	if (userPreferences == null || userPreferences.isAllowProfanity() == null) { //This is essentially lazy initialization
-    	    initializePreferences(serviceInput, serviceOutput);
-    	    return;
+	    if(shitMode){
+        	    initializePreferences(serviceInput, serviceOutput);
+        	    return;
+	    }else{
+	    	    setProfanityAllowableState(serviceInput.getUserId(), false);
+	    }
     	}
 	String heading = charGenUtility.generateHeading();
 	String character = charGenUtility.generateCharacter();
@@ -194,13 +205,26 @@ public class CharGenManager {
 	inputMetadata.setHeading(heading);
 	
 	serviceOutput.setConversationEnded(false);
-	filterServiceOutput(serviceOutput, userPreferences);
+	filterServiceOutput(serviceOutput, userPreferences, shitMode);
     }
 
     protected void doHelpRequest(ServiceInput serviceInput, ServiceOutput serviceOutput) {
-	String helpText = "It's easy, just ask: 'Who is my character?'. You can also say: 'repeat', or 'another', or you can ask to enable or disable profanity.";
-	serviceOutput.getVoiceOutput().setSsmltext(helpText);
-	serviceOutput.getVisualOutput().setText(helpText + "\n\nFull usage can be found here: http://www.3po-labs.com/CharacterGenerator.html \n\nOur skill is based on www.whothefuckismydndcharacter.com by Ryan J. Grant, based on WTFEngine by Justin Windle");
+	StringBuilder ssmlText = new StringBuilder();
+	ssmlText.append("It's easy, just ask: 'Who is my character?'.");
+	ssmlText.append(" You can also say: 'repeat', or 'another'");
+	if(shitMode){
+	    ssmlText.append(", or you can ask to enable or disable profanity.");
+	}
+	
+	StringBuilder visualOutputText = new StringBuilder(ssmlText);
+	visualOutputText.append("\n\nFull usage can be found here: http://www.3po-labs.com/CharacterGenerator.html ");
+	visualOutputText.append("\n\nOur skill is based on %s by Ryan J. Grant, based on WTFEngine by Justin Windle");
+	
+	String wtfimdndcLink = shitMode ? "www.whothefuckismydndcharacter.com" : "https://goo.gl/qYSFCi";
+	
+	serviceOutput.getVoiceOutput().setSsmltext(ssmlText.toString());
+	serviceOutput.getVisualOutput().setText(String.format(visualOutputText.toString(), wtfimdndcLink));
+	
 	serviceOutput.getVisualOutput().setTitle("Character Generator Help");
 	serviceOutput.getDelayedVoiceOutput().setSsmltext(generateRandomDelayedVoiceQuestion());
 	serviceOutput.setConversationEnded(false);
@@ -255,46 +279,47 @@ public class CharGenManager {
 	serviceOutput.getDelayedVoiceOutput().setSsmltext(charGenUtility.generateResponse() + generateRandomDelayedVoiceQuestion());
 	
 	serviceOutput.setConversationEnded(false);
-	filterServiceOutput(serviceOutput, userPreferences);
+	filterServiceOutput(serviceOutput, userPreferences, shitMode);
     }
 
     private void initializePreferences(ServiceInput serviceInput, ServiceOutput serviceOutput) throws DerpwizardException {
-	try{
-	    CharGenMetadata inputMetadata = (CharGenMetadata) ConversationHistoryUtils.getLastNonMetaRequestBySubject(serviceOutput.getMetadata().getConversationHistory(), META_SUBJECTS).getMetadata();
-	    inputMetadata.setQuestionTopic(QuestionTopic.ALLOW_PROFANITY);
-	    CharGenMetadata outputMetadata = (CharGenMetadata) serviceOutput.getMetadata();
-	    outputMetadata.setQuestionTopic(QuestionTopic.ALLOW_PROFANITY);
-	    
-	}catch(Throwable t){
-	    throw new DerpwizardException("Could not operate on conversation history metadata due to exception.");
-	}
-	LOG.info("Initializing preferences for user '" + serviceInput.getUserId() + "'.");
-	serviceOutput.getVoiceOutput()
-		.setSsmltext("Hi! It looks like it's your first time here. Before we start, I should tell you that I sometimes swear when I get excited. Are you comfortable hearing profanity?");
-	serviceOutput.getDelayedVoiceOutput().setSsmltext("Say 'yes' if you're cool with profanity, or 'no' if you want me to keep it P.G.");
-	serviceOutput.getVisualOutput().setTitle("Hi. How do you feel about profanity?");
-	serviceOutput.getVisualOutput().setText("Hi! It looks like this is the first time I've seen you here. Are you okay with me using profanity?\n\n Say 'yes' if that's cool with you, or 'no' if you want me to watch my mouth.");
-	serviceOutput.getDelayedVoiceOutput().setSsmltext("It's okay if you don't want to hear bad words, and you can always change your mind later. Just say 'yes' or 'no'.");
-	serviceOutput.setConversationEnded(false);
+    	try{
+    	    CharGenMetadata inputMetadata = (CharGenMetadata) ConversationHistoryUtils.getLastNonMetaRequestBySubject(serviceOutput.getMetadata().getConversationHistory(), META_SUBJECTS).getMetadata();
+    	    inputMetadata.setQuestionTopic(QuestionTopic.ALLOW_PROFANITY);
+    	    CharGenMetadata outputMetadata = (CharGenMetadata) serviceOutput.getMetadata();
+    	    outputMetadata.setQuestionTopic(QuestionTopic.ALLOW_PROFANITY);
+    	    
+    	}catch(Throwable t){
+    	    throw new DerpwizardException("Could not operate on conversation history metadata due to exception.");
+    	}
+    	LOG.info("Initializing preferences for user '" + serviceInput.getUserId() + "'.");
+    	serviceOutput.getVoiceOutput()
+    		.setSsmltext("Hi! It looks like it's your first time here. Before we start, I should tell you that I sometimes swear when I get excited. Are you comfortable hearing profanity?");
+    	serviceOutput.getDelayedVoiceOutput().setSsmltext("Say 'yes' if you're cool with profanity, or 'no' if you want me to keep it P.G.");
+    	serviceOutput.getVisualOutput().setTitle("Hi. How do you feel about profanity?");
+    	serviceOutput.getVisualOutput().setText("Hi! It looks like this is the first time I've seen you here. Are you okay with me using profanity?\n\n Say 'yes' if that's cool with you, or 'no' if you want me to watch my mouth.");
+    	serviceOutput.getDelayedVoiceOutput().setSsmltext("It's okay if you don't want to hear bad words, and you can always change your mind later. Just say 'yes' or 'no'.");
+    	serviceOutput.setConversationEnded(false);
     }
 
     private void toggleProfanity(ServiceInput serviceInput, ServiceOutput serviceOutput, boolean input) throws DerpwizardException {
-	try{
-	    setProfanityAllowableState(serviceInput.getUserId(), input);
-	}catch(Throwable t){
-	    LOG.error("Couldn't update allowable profanity state due to exception.",t);
-	    throw new DerpwizardException("Sorry, something went wrong and I couldn't change the level of my profanity filter.");
-	}
-	String output = "You bet your %s. What else can I do for you?";
-	if(input){
-	    output = String.format(output, "ass");
-	}else{
-	    output = String.format(output, "bottom");
-	}
-	serviceOutput.getVoiceOutput().setSsmltext(output);
-	serviceOutput.getVisualOutput().setText(output);
-	serviceOutput.getVisualOutput().setTitle("Updated!");
-	serviceOutput.setConversationEnded(false);
+
+    	try{
+    	    setProfanityAllowableState(serviceInput.getUserId(), input);
+    	}catch(Throwable t){
+    	    LOG.error("Couldn't update allowable profanity state due to exception.",t);
+    	    throw new DerpwizardException("Sorry, something went wrong and I couldn't change the level of my profanity filter.");
+    	}
+    	String output = "You bet your %s. What else can I do for you?";
+    	if(input){
+    	    output = String.format(output, "ass");
+    	}else{
+    	    output = String.format(output, "bottom");
+    	}
+    	serviceOutput.getVoiceOutput().setSsmltext(output);
+    	serviceOutput.getVisualOutput().setText(output);
+    	serviceOutput.getVisualOutput().setTitle("Updated!");
+    	serviceOutput.setConversationEnded(false);
     }
 
     private void setProfanityAllowableState(String userId, boolean allowed) {
