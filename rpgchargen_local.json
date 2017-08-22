@@ -1,4 +1,5 @@
 {
+  "certLogging":true,
   "charGenConfig":{
     "shitMode":false
   },
@@ -35,6 +36,14 @@
     "level": "INFO",
     "loggers": {
       "com.derpgroup": {
+        "level": "DEBUG",
+        "appenders": [
+          {
+            "type": "console"
+          }
+        ]
+      },
+      "com._3po_labs.rpgchargen.AlexaCertLogger": {
         "level": "DEBUG",
         "appenders": [
           {

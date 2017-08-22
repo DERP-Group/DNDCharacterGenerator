@@ -14,6 +14,7 @@ public class CharGenMainConfig extends MainConfig{
     @Valid
     @NotNull
     protected CharGenDAOConfig daoConfig;
+    private boolean certLogging = false;
 
     public CharGenConfig getCharGenConfig() {
         return charGenConfig;
@@ -29,5 +30,13 @@ public class CharGenMainConfig extends MainConfig{
 
     public void setDaoConfig(CharGenDAOConfig daoConfig) {
         this.daoConfig = daoConfig;
+    }
+
+    public boolean isCertLogging() {
+        return certLogging;
+    }
+
+    public void setCertLogging(boolean certLogging) {
+        this.certLogging = certLogging;
     }
 }

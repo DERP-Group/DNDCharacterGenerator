@@ -76,9 +76,7 @@ public class CharGenManager {
 	"How else can I help you?",
 	"What else do you need bro?",
 	"What should I do now?",
-	"What else would you like me to do?",
-	"Anything else I should do?",
-	"Anything else you want to do?"
+	"What else would you like me to do?"
     };
     
     private UserPreferencesDAO userPreferencesDao;
@@ -251,7 +249,7 @@ public class CharGenManager {
 	CharGenMetadata requestMetadata = (CharGenMetadata) entry.getMetadata();
 	QuestionTopic questionTopic = requestMetadata.getQuestionTopic(); 
 	if(questionTopic == null){
-	    throw new DerpwizardException("Sorry, I heard what sounded like an answer to a question, but I don't recall asking any questions.");
+	    throw new DerpwizardException("<speak>Sorry, I heard what sounded like an answer to a question, but I don't recall asking a yes or no question.</speak>");
 	}
 	
 	switch(questionTopic){
@@ -259,7 +257,7 @@ public class CharGenManager {
 	    setProfanityAllowableState(serviceInput.getUserId(), input);
 	    break;
 	    default: 
-		throw new DerpwizardException("Sorry, I know I asked you a question, but I seem to have forgotten what I was doing.");
+		throw new DerpwizardException("<speak>Sorry, I know I asked you a question, but I seem to have forgotten what I was doing.</speak>");
 	}
 	serviceInput.setSubject(entry.getMessageSubject());
 	handleRequest(serviceInput, serviceOutput);

@@ -42,12 +42,14 @@ import com._3po_labs.derpwizard.core.exception.DerpwizardException.DerpwizardExc
 import com._3po_labs.derpwizard.persistence.dao.AccountLinkingDAO;
 import com._3po_labs.derpwizard.persistence.dao.factory.AccountLinkingDAOFactory;
 import com._3po_labs.derpwizard.persistence.model.accountlinking.ExternalAccountLink;
+import com._3po_labs.rpgchargen.AlexaCertLogger;
 import com._3po_labs.rpgchargen.CharGenMetadata;
 import com._3po_labs.rpgchargen.MixInModule;
 import com._3po_labs.rpgchargen.configuration.CharGenMainConfig;
 import com._3po_labs.rpgchargen.manager.CharGenManager;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.json.SpeechletResponseEnvelope;
+import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.SpeechletRequest;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
@@ -79,6 +81,7 @@ public class CharGenAlexaResource {
   private CharGenManager manager;
   private AccountLinkingDAO accountLinkingDAO;
   private ObjectMapper mapper;
+  private boolean certLogging;
 
   static {
     ConversationHistoryUtils.getMapper().registerModule(new MixInModule());
@@ -89,6 +92,8 @@ public class CharGenAlexaResource {
     accountLinkingDAO = AccountLinkingDAOFactory.getDAO(config.getDaoConfig().getAccountLinkingDaoConfig());
 
     mapper = new ObjectMapper().registerModule(new MixInModule());
+    
+    certLogging = config.isCertLogging();
   }
 
   /**
@@ -100,7 +105,9 @@ public class CharGenAlexaResource {
   public SpeechletResponseEnvelope doAlexaRequest(@NotNull @Valid SpeechletRequestEnvelope request, @HeaderParam("SignatureCertChainUrl") String signatureCertChainUrl, 
       @HeaderParam("Signature") String signature, @QueryParam("testFlag") Boolean testFlag){
       
+      String consentToken = request.getSession().getUser().getPermissions().getConsentToken();
     CommonMetadata outputMetadata = null;
+    SpeechletResponseEnvelope response = null;
     try{
       if (request.getRequest() == null) {
         throw new DerpwizardException(DerpwizardExceptionReasons.MISSING_INFO.getSsml(),"Missing request body."); //TODO: create AlexaException
@@ -142,6 +149,7 @@ public class CharGenAlexaResource {
       SpeechletRequest speechletRequest = (SpeechletRequest)request.getRequest();
       String subject = AlexaUtils.getMessageSubject(speechletRequest);
       serviceInput.setSubject(subject);
+      serviceInput.setUserId(userId);
       
       ////////////////////////////////////
       // Build the ServiceOutput object //
@@ -204,13 +212,18 @@ public class CharGenAlexaResource {
 
       Map<String,Object> sessionAttributes = mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){});
       
-      return AlexaUtils.buildOutput(outputSpeech, card, reprompt, shouldEndSession, sessionAttributes);
+      response = AlexaUtils.buildOutput(outputSpeech, card, reprompt, shouldEndSession, sessionAttributes); 
     }catch(DerpwizardException e){
       LOG.debug(e.getMessage());
-      return new DerpwizardExceptionAlexaWrapper(e, ALEXA_VERSION,mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
+      response = new DerpwizardExceptionAlexaWrapper(e, ALEXA_VERSION,mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
     }catch(Throwable t){
       LOG.error(t.getMessage());
-      return new DerpwizardExceptionAlexaWrapper(new DerpwizardException(t.getMessage()),ALEXA_VERSION, mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
+      response = new DerpwizardExceptionAlexaWrapper(new DerpwizardException(t.getMessage()),ALEXA_VERSION, mapper.convertValue(outputMetadata, new TypeReference<Map<String,Object>>(){}));
+    }finally{
+	if(certLogging){
+	    AlexaCertLogger.log(request.getSession().getSessionId(), request, response);
+	}
     }
+    return response;
   }
 }

@@ -1,4 +1,5 @@
 {
+  "certLogging":true,
   "charGenConfig":{
     "shitMode":false
   },
@@ -41,6 +42,17 @@
             "type": "file",
             "currentLogFilename": "/var/log/rpgchargen/rpgchargen.log",
             "archivedLogFilenamePattern": "/var/log/rpgchargen/rpgchargen-%d.log",
+            "archivedFileCount": 5
+          }
+        ]
+      },
+      "com._3po_labs.rpgchargen.AlexaCertLogger": {
+        "level": "DEBUG",
+        "appenders": [
+          {
+            "type": "file",
+            "currentLogFilename": "/var/log/rpgchargen/certLogging.log",
+            "archivedLogFilenamePattern": "/var/log/rpgchargen/certLogging-%d.log",
             "archivedFileCount": 5
           }
         ]
